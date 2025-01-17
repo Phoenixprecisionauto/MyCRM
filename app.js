@@ -1,4 +1,4 @@
-// CRM with User Management and Features
+// CRM with User Roles and Admin Features
 
 const loginForm = document.getElementById('loginForm');
 const signUpForm = document.getElementById('signUpForm');
@@ -7,10 +7,13 @@ const loginSection = document.getElementById('loginSection');
 const signUpSection = document.getElementById('signUpSection');
 const resetPasswordSection = document.getElementById('resetPasswordSection');
 const crmSection = document.getElementById('crmSection');
+const adminFeatures = document.getElementById('adminFeatures');
 const customerForm = document.getElementById('customerForm');
 const customerListContainer = document.getElementById('customerListContainer');
+const logsContainer = document.getElementById('logsContainer');
 
 let customers = JSON.parse(localStorage.getItem('customers')) || [];
+let activityLogs = JSON.parse(localStorage.getItem('activityLogs')) || [];
 
 // Navigation between Login, Sign Up, and Reset Password
 document.getElementById('showSignUp').addEventListener('click', () => {
@@ -35,6 +38,7 @@ signUpForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const username = document.getElementById('signUpUsername').value;
     const password = document.getElementById('signUpPassword').value;
+    const role = document.getElementById('role').value;
     const securityQuestion = document.getElementById('securityQuestion').value;
     const securityAnswer = document.getElementById('securityAnswer').value;
 
@@ -44,7 +48,7 @@ signUpForm.addEventListener('submit', (event) => {
         return;
     }
 
-    users.push({ username, password, securityQuestion, securityAnswer });
+    users.push({ username, password, role, securityQuestion, securityAnswer });
     localStorage.setItem('users', JSON.stringify(users));
 
     alert('Sign Up Successful! You can now log in.');
@@ -64,6 +68,10 @@ loginForm.addEventListener('submit', (event) => {
     if (user) {
         loginSection.classList.add('hidden');
         crmSection.classList.remove('hidden');
+        if (user.role === 'admin') {
+            adminFeatures.classList.remove('hidden');
+        }
+        logActivity(`${user.username} logged in.`);
         displayCustomers();
         updateReports();
     } else {
@@ -107,6 +115,7 @@ customerForm.addEventListener('submit', (event) => {
     customers.push(newCustomer);
     localStorage.setItem('customers', JSON.stringify(customers));
 
+    logActivity(`Customer ${name} added.`);
     displayCustomers();
     updateReports();
     customerForm.reset();
@@ -136,6 +145,7 @@ function addTask(index) {
     if (task) {
         customers[index].tasks.push(task);
         localStorage.setItem('customers', JSON.stringify(customers));
+        logActivity(`Task added for ${customers[index].name}.`);
         displayCustomers();
         updateReports();
     }
@@ -149,3 +159,15 @@ function updateReports() {
     document.getElementById('totalCustomers').textContent = totalCustomers;
     document.getElementById('totalTasks').textContent = totalTasks;
 }
+
+// Log Activity
+function logActivity(activity) {
+    const timestamp = new Date().toLocaleString();
+    activityLogs.push(`[${timestamp}] ${activity}`);
+    localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
+}
+
+// View Logs (Admin Only)
+document.getElementById('viewLogs').addEventListener('click', () => {
+    logsContainer.innerHTML = activityLogs.map(log => `<p>${log}</p>`).join('');
+});
