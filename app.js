@@ -1,4 +1,4 @@
-// CRM with User Roles and Admin Features
+// CRM with Restricted Admin Role Creation
 
 const loginForm = document.getElementById('loginForm');
 const signUpForm = document.getElementById('signUpForm');
@@ -38,9 +38,12 @@ signUpForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const username = document.getElementById('signUpUsername').value;
     const password = document.getElementById('signUpPassword').value;
-    const role = document.getElementById('role').value;
     const securityQuestion = document.getElementById('securityQuestion').value;
     const securityAnswer = document.getElementById('securityAnswer').value;
+    const adminKey = document.getElementById('adminKey').value;
+
+    const ADMIN_KEY = "ADMIN2025";
+    const role = adminKey === ADMIN_KEY ? "admin" : "user";
 
     const users = JSON.parse(localStorage.getItem('users')) || [];
     if (users.some(user => user.username === username)) {
@@ -68,7 +71,7 @@ loginForm.addEventListener('submit', (event) => {
     if (user) {
         loginSection.classList.add('hidden');
         crmSection.classList.remove('hidden');
-        if (user.role === 'admin') {
+        if (user.role === "admin") {
             adminFeatures.classList.remove('hidden');
         }
         logActivity(`${user.username} logged in.`);
