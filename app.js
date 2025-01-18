@@ -1,4 +1,4 @@
-// CRM with Restricted Admin Role Creation
+// CRM with Role-Based Features and Improved UI
 
 const loginForm = document.getElementById('loginForm');
 const signUpForm = document.getElementById('signUpForm');
@@ -73,6 +73,9 @@ loginForm.addEventListener('submit', (event) => {
         crmSection.classList.remove('hidden');
         if (user.role === "admin") {
             adminFeatures.classList.remove('hidden');
+        } else {
+            document.getElementById('reports-tab').classList.add('hidden');
+            document.getElementById('viewLogs').classList.add('hidden');
         }
         logActivity(`${user.username} logged in.`);
         displayCustomers();
